@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CinePulse — Premium Cinema & Movie Ticket Booking</title>
+  <meta name="description" content="Discover movies, select showtimes across top theaters, and book seats with real-time zero-race-condition concurrency protection like BookMyShow.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Ambient Lighting Background -->
+  <div class="ambient-glow glow-top"></div>
+  <div class="ambient-glow glow-bottom"></div>
+
+  <!-- Primary Top Navigation Bar (BookMyShow Style) -->
+  <header class="navbar" id="main-nav">
+    <div class="nav-container">
+      
+      <!-- Brand & City Location Selector -->
+      <div class="nav-left-group">
+        <div class="nav-brand" id="brand-logo" title="Back to Home">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+              <line x1="7" y1="2" x2="7" y2="22"></line>
+              <line x1="17" y1="2" x2="17" y2="22"></line>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <line x1="2" y1="7" x2="7" y2="7"></line>
+              <line x1="2" y1="17" x2="7" y2="17"></line>
+              <line x1="17" y1="17" x2="22" y2="17"></line>
+              <line x1="17" y1="7" x2="22" y2="7"></line>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">CinePulse</span>
+            <span class="brand-badge">PREMIUM TICKETS</span>
+          </div>
+        </div>
+
+        <!-- City Dropdown Pill -->
+        <div class="city-selector-wrap" id="city-selector-wrap">
+          <button class="city-pill-btn" id="city-toggle-btn" title="Change Location">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span id="current-city-label">New York, NY</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- City Picker Dropdown Menu -->
+          <div class="city-dropdown-menu hidden" id="city-dropdown-menu">
+            <div class="city-menu-header">Popular Cinema Regions</div>
+            <button class="city-option active" data-city="New York, NY">New York, NY</button>
+            <button class="city-option" data-city="Los Angeles, CA">Los Angeles, CA</button>
+            <button class="city-option" data-city="London, UK">London, UK</button>
+            <button class="city-option" data-city="Mumbai, IN">Mumbai, IN</button>
+            <button class="city-option" data-city="Tokyo, JP">Tokyo, JP</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Search Bar (BookMyShow Style) -->
+      <div class="nav-search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="global-search-input" placeholder="Search for Movies, Cinemas, Genres, IMAX..." autocomplete="off">
+        <button class="search-clear-btn hidden" id="search-clear-btn">&times;</button>
+      </div>
+
+      <!-- Right Nav Actions -->
+      <div class="nav-right-group">
+        <div class="status-pill" id="connection-pill" title="Live WebSocket Concurrency Sync">
+          <span class="pulse-dot active" id="ws-pulse-dot"></span>
+          <span id="ws-status-text">Live Sync</span>
+        </div>
+
+        <button class="nav-btn" id="audio-toggle-btn" title="Toggle Sound Feedback">
+          <svg id="audio-icon-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="audio-icon-off" class="hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <button class="nav-btn lab-btn" id="open-lab-btn" title="Open Concurrency & Race Condition Laboratory">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span>Concurrency Lab</span>
+        </button>
+
+        <button class="nav-btn bookings-btn" id="open-bookings-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>My Tickets</span>
+          <span class="badge-count" id="my-bookings-count">0</span>
+        </button>
+        
+        <div class="user-profile-menu-wrap">
+          <button class="nav-btn profile-btn" id="profile-toggle-btn" title="Account Settings">
+            <img src="https://ui-avatars.com/api/?name=Alex+Mercer&background=00f0ff&color=000&rounded=true&size=24&bold=true" alt="User Profile" class="nav-avatar">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Sticky Hold Lease Countdown Banner (Displays whenever seats are held across any view) -->
+  <aside class="hold-timer-bar hidden" id="hold-timer-banner" aria-live="polite">
+    <div class="hold-timer-content">
+      <div class="timer-pulse-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div class="timer-info">
+        <span class="timer-label">SEATS LOCKED EXCLUSIVELY FOR YOU:</span>
+        <span class="timer-countdown" id="countdown-display">02:00</span>
+        <span class="timer-desc">Complete checkout before your lease expires and returns seats to the public pool.</span>
+      </div>
+      <button class="release-btn" id="release-all-holds-btn" title="Release seat locks">
+        Release Seats
+      </button>
+    </div>
+    <div class="timer-progress-track">
+      <div class="timer-progress-fill" id="timer-progress-bar"></div>
+    </div>
+  </aside>
+
+  <!-- Sub-Header Secondary Bar (Categories / Navigation) -->
+  <nav class="sub-navbar">
+    <div class="sub-nav-container">
+      <div class="sub-nav-links">
+        <button class="sub-link active" id="nav-home-btn">Movies in Cinemas</button>
+        <button class="sub-link" id="nav-experiences-btn">IMAX & Premium Screens</button>
+        <button class="sub-link" id="nav-upcoming-btn">Special Re-Releases</button>
+      </div>
+      <div class="sub-nav-badges">
+        <span class="sub-badge"><span class="dot-green"></span> Zero Race Conditions Guaranteed</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 0: AUTHENTICATION SCREEN                                              -->
+  <!-- ========================================================================= -->
+  <main class="page-view active" id="view-auth">
+    <section class="auth-section">
+      <div class="auth-card">
+        <div class="brand-icon auth-brand-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+            <line x1="7" y1="2" x2="7" y2="22"></line>
+            <line x1="17" y1="2" x2="17" y2="22"></line>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+          </svg>
+        </div>
+        <h1 class="auth-title">Welcome to CinePulse</h1>
+        <p class="auth-subtitle">Sign in to book premium cinema tickets with zero race conditions.</p>
+        
+        <button class="auth-btn google-btn" id="login-google-btn">
+          <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Continue with Google
+        </button>
+        <button class="auth-btn guest-btn" id="login-guest-btn">
+          Continue as Guest
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 1: HOME SCREEN (BOOKMYSHOW EXPERIENCE)                                -->
+  <!-- ========================================================================= -->
+  <main class="page-view hidden" id="view-home">
+    
+    <!-- Personalized User Greeting Banner (Post-Auth Experience) -->
+    <section class="user-greeting-section">
+      <div class="user-greeting-container">
+        <div class="user-info-wrap">
+          <div class="user-avatar">
+            <img src="https://ui-avatars.com/api/?name=Alex+Mercer&background=00f0ff&color=000&rounded=true&size=64&bold=true" alt="Alex Mercer">
+          </div>
+          <div class="user-greeting-text">
+            <span class="greeting-time" id="greeting-time">Good Evening,</span>
+            <h1 class="greeting-name">Alex Mercer</h1>
+          </div>
+        </div>
+        <div class="user-quick-stats">
+          <div class="stat-badge loyalty-badge">
+            <div class="stat-icon">🌟</div>
+            <div class="stat-details">
+              <span class="stat-val">2,450 pts</span>
+              <span class="stat-lbl">CinePulse Gold</span>
+            </div>
+          </div>
+          <div class="stat-badge upcoming-badge">
+            <div class="stat-icon">🎫</div>
+            <div class="stat-details">
+              <span class="stat-val">1 Upcoming</span>
+              <span class="stat-lbl">View Ticket &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hero Billboard Showcase Carousel -->
+    <section class="hero-carousel-section" id="hero-carousel-section">
+      <div class="hero-slide-wrap" id="hero-slide-wrap">
+        <!-- Dynamically injected featured hero banners -->
+      </div>
+      <!-- Carousel Dots Navigation -->
+      <div class="carousel-indicators" id="carousel-indicators"></div>
+    </section>
+
+    <!-- Genre & Experience Filter Chips -->
+    <section class="filter-strip-section">
+      <div class="filter-strip-container">
+        <div class="filter-label">BROWSE BY:</div>
+        <div class="filter-chips" id="filter-chips">
+          <button class="filter-chip active" data-genre="all">All Movies</button>
+          <button class="filter-chip" data-genre="Sci-Fi">Sci-Fi</button>
+          <button class="filter-chip" data-genre="Action">Action & Thriller</button>
+          <button class="filter-chip" data-genre="Drama">Drama & Bio</button>
+          <button class="filter-chip" data-genre="Animation">Animation</button>
+          <button class="filter-chip" data-genre="IMAX">IMAX 70mm</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Movies Grid Section ("Now Showing" in BookMyShow style) -->
+    <section class="movies-grid-section">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">Recommended Movies in Theaters</h2>
+            <p class="section-subtitle">Real-time seat selection with atomic locking across premium auditoriums</p>
+          </div>
+          <div class="movies-count-badge" id="movies-count-badge">6 Movies Available</div>
+        </div>
+
+        <!-- Movie Cards Grid -->
+        <div class="movies-grid" id="movies-grid">
+          <!-- Dynamically populated movie cards -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Cinema Theaters & Formats Showcase -->
+    <section class="cinemas-showcase-section">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h3 class="section-title">Premier Cinema Formats</h3>
+            <p class="section-subtitle">Experience films the way directors intended</p>
+          </div>
+        </div>
+        <div class="format-cards-grid">
+          <div class="format-card">
+            <div class="format-card-badge">IMAX 70MM</div>
+            <h4>IMAX Dual Laser 70mm</h4>
+            <p>1.43:1 aspect ratio with pristine laser projection and 12-channel spatial audio.</p>
+          </div>
+          <div class="format-card">
+            <div class="format-card-badge dolby-badge">DOLBY ATMOS</div>
+            <h4>Dolby Cinema & Vision</h4>
+            <p>Unmatched contrast with Dolby Vision HDR and revolutionary multidimensional sound.</p>
+          </div>
+          <div class="format-card">
+            <div class="format-card-badge motion-badge">4DX 3D</div>
+            <h4>4DX Motion Experience</h4>
+            <p>Motion-synchronized seats with environmental effects including wind, fog, and lightning.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 2: MOVIE DETAILS & SHOWTIME SELECTION (BOOKMYSHOW STYLE)              -->
+  <!-- ========================================================================= -->
+  <main class="page-view hidden" id="view-movie-detail">
+    
+    <!-- Top Breadcrumb & Back Bar -->
+    <div class="breadcrumb-bar">
+      <div class="breadcrumb-container">
+        <button class="back-link-btn" id="back-to-home-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Back to All Movies</span>
+        </button>
+        <span class="crumb-separator">/</span>
+        <span class="current-crumb" id="crumb-movie-title">Movie Details</span>
+      </div>
+    </div>
+
+    <!-- Movie Details Hero Header -->
+    <section class="movie-detail-hero" id="movie-detail-hero">
+      <div class="movie-detail-backdrop" id="movie-detail-backdrop"></div>
+      <div class="movie-detail-content">
+        <div class="detail-poster-wrap">
+          <img id="detail-movie-poster" src="" alt="Movie Poster" class="detail-poster-img">
+        </div>
+        <div class="detail-info-wrap">
+          <div class="detail-pill-tags">
+            <span class="detail-cert" id="detail-movie-cert">UA 16+</span>
+            <span class="detail-lang" id="detail-movie-languages">English, IMAX 2D</span>
+            <span class="detail-dur" id="detail-movie-duration">166 min</span>
+          </div>
+          <h1 class="detail-movie-title" id="detail-movie-title">Movie Title</h1>
+          <p class="detail-tagline" id="detail-movie-tagline">Tagline goes here</p>
+          
+          <div class="detail-rating-strip">
+            <div class="detail-score-box">
+              <span class="star-icon">⭐</span>
+              <strong id="detail-movie-score">9.3</strong>
+              <span class="votes-span" id="detail-movie-votes">(240K Votes)</span>
+            </div>
+            <div class="detail-genre-box" id="detail-movie-genres">Sci-Fi / Action / Adventure</div>
+          </div>
+
+          <p class="detail-synopsis" id="detail-movie-synopsis">Synopsis...</p>
+
+          <div class="detail-crew-row">
+            <div><span class="crew-lbl">Director:</span> <span id="detail-director">Denis Villeneuve</span></div>
+            <div><span class="crew-lbl">Starring:</span> <span id="detail-cast">Timothée Chalamet, Zendaya</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Horizontal Date Selector Strip (BookMyShow Landmark Feature) -->
+    <section class="date-strip-section">
+      <div class="section-container">
+        <div class="date-strip-scroll" id="date-strip-scroll">
+          <button class="date-card active" data-date="Today, Sep 24">
+            <span class="date-day">TODAY</span>
+            <span class="date-num">24</span>
+            <span class="date-month">SEP</span>
+          </button>
+          <button class="date-card" data-date="Tomorrow, Sep 25">
+            <span class="date-day">TOM</span>
+            <span class="date-num">25</span>
+            <span class="date-month">SEP</span>
+          </button>
+          <button class="date-card" data-date="Fri, Sep 26">
+            <span class="date-day">FRI</span>
+            <span class="date-num">26</span>
+            <span class="date-month">SEP</span>
+          </button>
+          <button class="date-card" data-date="Sat, Sep 27">
+            <span class="date-day">SAT</span>
+            <span class="date-num">27</span>
+            <span class="date-month">SEP</span>
+          </button>
+          <button class="date-card" data-date="Sun, Sep 28">
+            <span class="date-day">SUN</span>
+            <span class="date-num">28</span>
+            <span class="date-month">SEP</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Theaters & Showtimes Listing -->
+    <section class="theaters-list-section">
+      <div class="section-container">
+        <div class="theaters-filter-bar">
+          <div class="theater-legend">
+            <span class="legend-dot dot-avail"></span> Available
+            <span class="legend-dot dot-fast"></span> Fast Filling
+            <span class="legend-dot dot-almost"></span> Almost Full
+          </div>
+          <div class="concurrency-safe-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>Instant Atomic Locking Active</span>
+          </div>
+        </div>
+
+        <div class="cinemas-stack" id="cinemas-stack">
+          <!-- Dynamically populated cinema cards with showtimes -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- VIEW 3: INTERACTIVE SEATING AUDITORIUM & CHECKOUT                          -->
+  <!-- ========================================================================= -->
+  <main class="page-view hidden" id="view-seat-map">
+    
+    <!-- Top Breadcrumb & Back to Showtimes Bar -->
+    <div class="breadcrumb-bar">
+      <div class="breadcrumb-container">
+        <button class="back-link-btn" id="back-to-showtimes-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Back to Theaters & Showtimes</span>
+        </button>
+        <span class="crumb-separator">/</span>
+        <span class="current-crumb" id="crumb-screening-summary">Auditorium Seating</span>
+      </div>
+    </div>
+
+    <!-- Main Booking Layout -->
+    <div class="booking-layout-wrapper">
+      
+      <!-- Center: Theater Stage & Interactive Seat Grid -->
+      <section class="auditorium-wrapper">
+        <div class="auditorium-card" id="auditorium-card">
+          
+          <!-- Auditorium Header Bar -->
+          <div class="auditorium-header">
+            <div class="hall-info">
+              <h2 class="hall-name" id="current-hall-name">Auditorium 1</h2>
+              <span class="hall-screen-type" id="current-hall-screen">IMAX LASER PROJECTION</span>
+            </div>
+
+            <!-- Real-time Seat Stats -->
+            <div class="seat-stats-strip">
+              <div class="stat-item"><span class="stat-dot dot-available"></span> Available: <strong id="stat-available-count">--</strong></div>
+              <div class="stat-item"><span class="stat-dot dot-held"></span> Locked by Others: <strong id="stat-held-count">--</strong></div>
+              <div class="stat-item"><span class="stat-dot dot-confirmed"></span> Sold: <strong id="stat-sold-count">--</strong></div>
+            </div>
+
+            <!-- Reset Seats Utility -->
+            <button class="reset-seats-btn" id="reset-hall-seats-btn" title="Reset all seats for testing">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2.5 2v6h6M21.5 22v-6h-6"></path>
+                <path d="M22 11.5A10 10 0 0 0 3.2 7.2L2.5 8M2 12.5a10 10 0 0 0 18.8 4.2l.7-1.2"></path>
+              </svg>
+              <span>Reset Demo</span>
+            </button>
+          </div>
+
+          <!-- Cinema Screen Curve Representation -->
+          <div class="cinema-screen-container">
+            <div class="screen-light-beam"></div>
+            <div class="screen-curve">
+              <svg class="screen-arc-svg" viewBox="0 0 600 60" preserveAspectRatio="none">
+                <path d="M 20 50 Q 300 10 580 50" fill="none" stroke="url(#screenGrad)" stroke-width="4"></path>
+                <defs>
+                  <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.2"/>
+                    <stop offset="50%" stop-color="#00F0FF" stop-opacity="1"/>
+                    <stop offset="100%" stop-color="#00F0FF" stop-opacity="0.2"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="screen-label">CURVED THEATER SCREEN (ALL EYES THIS WAY)</div>
+          </div>
+
+          <!-- Interactive Seating Map -->
+          <div class="seat-grid-container" id="seat-grid-container">
+            <!-- Injected dynamically -->
+          </div>
+
+          <!-- Seat Map Legend -->
+          <div class="seat-legend-bar">
+            <div class="legend-item">
+              <span class="legend-seat seat-sample-available"></span>
+              <span>Available</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-seat seat-sample-selected"></span>
+              <span>Selected (You)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-seat seat-sample-held"></span>
+              <span class="pulse-text">Locked by Others</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-seat seat-sample-confirmed"></span>
+              <span>Sold Out</span>
+            </div>
+            <div class="legend-separator"></div>
+            <div class="legend-item tier-item">
+              <span class="tier-pill vip-pill">VIP Recliner ($24.50)</span>
+              <span class="tier-pill premium-pill">Premium Club ($18.50)</span>
+              <span class="tier-pill standard-pill">Standard ($14.00)</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Right: Sticky Order Summary & Checkout Drawer -->
+      <aside class="checkout-aside" id="checkout-drawer">
+        <div class="checkout-card">
+          
+          <div class="checkout-header">
+            <h3 class="checkout-title">Booking Summary</h3>
+            <span class="booking-status-tag" id="booking-badge">No Seats Selected</span>
+          </div>
+
+          <!-- Movie & Show Details Box -->
+          <div class="summary-movie-info">
+            <h4 id="summary-movie-name" class="summary-film-title">Movie Name</h4>
+            <div class="summary-show-tags">
+              <span id="summary-cinema-name">PVR IMAX Metropolis</span><br>
+              <span id="summary-hall-name">Auditorium 1</span> • 
+              <span id="summary-show-time">06:15 PM</span> • 
+              <span id="summary-show-date">Today, Sep 24</span>
+            </div>
+          </div>
+
+          <!-- Selected Seats List -->
+          <div class="selected-seats-panel">
+            <div class="panel-header">
+              <span>SELECTED SEATS (<span id="selected-count">0</span>)</span>
+              <button class="clear-selection-btn hidden" id="clear-selection-btn">Clear All</button>
+            </div>
+            <div class="selected-chips-list" id="selected-chips-list">
+              <div class="empty-seats-state">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"></path>
+                  <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"></path>
+                  <path d="M5 18v2"></path>
+                  <path d="M19 18v2"></path>
+                </svg>
+                <span>Click on any available seat in the map to reserve it.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Concurrency Guarantee Notice -->
+          <div class="concurrency-guarantee-box">
+            <div class="guarantee-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div class="guarantee-text">
+              <strong>Atomic Lock Protection Active</strong>
+              <span>Selected seats are leased exclusively to your session. No other customer or bot can claim them while your lock is valid.</span>
+            </div>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="price-breakdown-card">
+            <div class="breakdown-row">
+              <span>Seat Subtotal</span>
+              <span id="price-subtotal">$0.00</span>
+            </div>
+            <div class="breakdown-row">
+              <span>Convenience & Booking Fee</span>
+              <span id="price-fee">$0.00</span>
+            </div>
+            <div class="breakdown-row">
+              <span>Estimated Sales Tax (8%)</span>
+              <span id="price-tax">$0.00</span>
+            </div>
+            <div class="breakdown-divider"></div>
+            <div class="breakdown-row total-row">
+              <span>Total Payable</span>
+              <span id="price-total">$0.00</span>
+            </div>
+          </div>
+
+          <!-- Customer Checkout Form -->
+          <form class="checkout-form" id="checkout-form" onsubmit="return false;">
+            <div class="form-group">
+              <label for="cust-name">Full Name</label>
+              <input type="text" id="cust-name" placeholder="e.g. Alex Mercer" required value="Alex Mercer">
+            </div>
+            <div class="form-group">
+              <label for="cust-email">Email Address</label>
+              <input type="email" id="cust-email" placeholder="alex.mercer@example.com" required value="alex.mercer@example.com">
+            </div>
+            <div class="form-group">
+              <label>Payment Method</label>
+              <div class="payment-pills">
+                <label class="pay-radio active">
+                  <input type="radio" name="payment-method" value="Apple Pay" checked>
+                  <span>Apple Pay</span>
+                </label>
+                <label class="pay-radio">
+                  <input type="radio" name="payment-method" value="Credit Card">
+                  <span>Credit Card</span>
+                </label>
+                <label class="pay-radio">
+                  <input type="radio" name="payment-method" value="Google Pay">
+                  <span>Google Pay</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Checkout Action Button -->
+            <button type="submit" class="checkout-submit-btn" id="checkout-submit-btn" disabled>
+              <span class="btn-text">Confirm Booking</span>
+              <span class="btn-amount" id="btn-total-amount">$0.00</span>
+            </button>
+          </form>
+
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODALS: CONCURRENCY LAB, TICKETS, AND PASSES                               -->
+  <!-- ========================================================================= -->
+
+  <!-- Concurrency & Race Condition Lab Modal -->
+  <div class="modal-backdrop hidden" id="concurrency-lab-modal">
+    <div class="modal-card lab-card">
+      <div class="modal-header">
+        <div class="lab-title-wrap">
+          <div class="lab-icon-badge">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-title">Race Condition & Concurrency Laboratory</h2>
+            <p class="modal-subtitle">Real-time Stress Testing & Atomic Lock Conflict Demonstration</p>
+          </div>
+        </div>
+        <button class="close-modal-btn" id="close-lab-btn">&times;</button>
+      </div>
+
+      <div class="lab-body">
+        
+        <!-- Explanation Card -->
+        <div class="lab-intro-box">
+          <h4>How CinePulse Eliminates Race Conditions</h4>
+          <p>
+            When hot tickets go on sale, thousands of automated bots and users submit requests at the exact same millisecond. CinePulse uses <strong>Lexicographically Ordered Atomic Compare-and-Swap (CAS)</strong> with <strong>Time-To-Live (TTL) Leases</strong>. When 50 bots target the exact same seat, only 1 bot wins the lease (200 OK); the remaining 49 requests are atomically rejected with <code>409 Conflict</code>.
+          </p>
+        </div>
+
+        <!-- Interactive Test Controls -->
+        <div class="lab-controls-panel">
+          <div class="control-box">
+            <label for="lab-target-seat">Target Seat to Contest:</label>
+            <select id="lab-target-seat" class="lab-select">
+              <option value="C6" selected>Seat C6 (Premium Club - Center)</option>
+              <option value="A6">Seat A6 (VIP Recliner - Front Center)</option>
+              <option value="D7">Seat D7 (Premium Club)</option>
+              <option value="F6">Seat F6 (Standard Center)</option>
+            </select>
+          </div>
+
+          <div class="control-box">
+            <label for="lab-bot-count">Simultaneous Concurrent Bots: <span id="bot-count-display">25 Bots</span></label>
+            <input type="range" id="lab-bot-count" min="5" max="50" step="5" value="25" class="lab-slider">
+          </div>
+
+          <button class="launch-stress-btn" id="launch-stress-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Launch Bot Rush Simulation</span>
+          </button>
+        </div>
+
+        <!-- Simulation Results Section -->
+        <div class="simulation-results-box hidden" id="simulation-results-box">
+          <div class="results-header-banner" id="results-verdict-banner">
+            <div class="verdict-icon" id="verdict-icon">✅</div>
+            <div class="verdict-text">
+              <h3 id="verdict-title">RACE CONDITION ELIMINATED</h3>
+              <p id="verdict-desc">25 concurrent bots fired at t0. Exactly 1 acquired lock, 24 rejected. 0 double bookings.</p>
+            </div>
+            <div class="verdict-metrics">
+              <div class="metric"><span class="metric-num" id="metric-duration">0.00ms</span><span class="metric-lbl">Total Time</span></div>
+              <div class="metric winner-metric"><span class="metric-num" id="metric-winners">1</span><span class="metric-lbl">Lock Winner</span></div>
+              <div class="metric conflict-metric"><span class="metric-num" id="metric-conflicts">24</span><span class="metric-lbl">Conflicts (409)</span></div>
+            </div>
+          </div>
+
+          <!-- Execution Waterfall / Contention Breakdown -->
+          <div class="waterfall-panel">
+            <div class="waterfall-header">
+              <span>SIMULTANEOUS DISPATCH WATERFALL TRACE</span>
+              <span class="mono-legend">Status Code • Microsecond Latency</span>
+            </div>
+            <div class="waterfall-list" id="waterfall-list">
+              <!-- Dynamically populated bot attempts -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Concurrency Audit Log Stream -->
+        <div class="audit-log-section">
+          <div class="audit-header">
+            <h4>Live Server Audit Log Stream (All Users & Locks)</h4>
+            <button class="refresh-audit-btn" id="refresh-audit-btn">Refresh</button>
+          </div>
+          <div class="audit-logs-table-wrap">
+            <table class="audit-table">
+              <thead>
+                <tr>
+                  <th>Time (ms)</th>
+                  <th>Event Type</th>
+                  <th>Seat(s)</th>
+                  <th>Client / Actor</th>
+                  <th>Status & Diagnostic Trace</th>
+                </tr>
+              </thead>
+              <tbody id="audit-logs-tbody">
+                <!-- Log entries injected -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- My Bookings Modal -->
+  <div class="modal-backdrop hidden" id="my-bookings-modal">
+    <div class="modal-card bookings-card">
+      <div class="modal-header">
+        <div class="lab-title-wrap">
+          <div class="lab-icon-badge ticket-badge">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-title">My Cinema Tickets</h2>
+            <p class="modal-subtitle">Confirmed reservations, boarding passes & cancellations</p>
+          </div>
+        </div>
+        <button class="close-modal-btn" id="close-bookings-btn">&times;</button>
+      </div>
+
+      <div class="bookings-body">
+        <div class="bookings-grid" id="bookings-grid">
+          <!-- Dynamically populated tickets -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Digital Cinema Boarding Pass Ticket Modal -->
+  <div class="modal-backdrop hidden" id="ticket-pass-modal">
+    <div class="modal-card ticket-pass-card">
+      <button class="close-modal-btn float-close" id="close-ticket-pass-btn">&times;</button>
+      
+      <!-- Boarding Pass Container -->
+      <div class="boarding-pass-wrap" id="printable-ticket">
+        
+        <!-- Left Stub -->
+        <div class="pass-main">
+          <div class="pass-top">
+            <div class="pass-cinema-brand">
+              <span class="brand-sub">CINEMA ADMISSION PASS</span>
+              <h3 class="pass-hall-title" id="ticket-hall">Auditorium 1 • IMAX Laser</h3>
+            </div>
+            <div class="pass-booking-ref">
+              <span class="ref-label">BOOKING ID</span>
+              <span class="ref-val" id="ticket-booking-id">CP-XXXXXX</span>
+            </div>
+          </div>
+
+          <div class="pass-film-banner">
+            <h2 class="pass-film-title" id="ticket-movie-title">Dune: Part Two</h2>
+            <span class="pass-film-format" id="ticket-screen-type">IMAX 70MM DUAL LASER</span>
+          </div>
+
+          <div class="pass-grid-details">
+            <div class="pass-detail-col">
+              <span class="detail-label">DATE</span>
+              <span class="detail-value" id="ticket-date">Today, Sep 24</span>
+            </div>
+            <div class="pass-detail-col">
+              <span class="detail-label">TIME</span>
+              <span class="detail-value" id="ticket-time">18:00</span>
+            </div>
+            <div class="pass-detail-col">
+              <span class="detail-label">SEATS</span>
+              <span class="detail-value highlight-seats" id="ticket-seats">C5, C6</span>
+            </div>
+            <div class="pass-detail-col">
+              <span class="detail-label">GUEST</span>
+              <span class="detail-value" id="ticket-guest-name">Alex Mercer</span>
+            </div>
+          </div>
+
+          <!-- Barcode -->
+          <div class="pass-barcode-wrap">
+            <div class="simulated-barcode"></div>
+            <span class="barcode-num" id="ticket-barcode-num">4829 0184 7291 0029</span>
+          </div>
+        </div>
+
+        <!-- Perforation Divider -->
+        <div class="pass-divider">
+          <div class="perforation-notch notch-top"></div>
+          <div class="dashed-line"></div>
+          <div class="perforation-notch notch-bottom"></div>
+        </div>
+
+        <!-- Right Stub with Canvas QR Code -->
+        <div class="pass-stub">
+          <div class="stub-header">
+            <span>VERIFIED PASS</span>
+            <span class="stub-admit">ADMIT 1+</span>
+          </div>
+
+          <div class="qr-canvas-wrap">
+            <canvas id="ticket-qr-canvas" width="130" height="130"></canvas>
+          </div>
+
+          <div class="stub-info">
+            <div class="stub-seat-display" id="stub-seats-display">C5, C6</div>
+            <div class="stub-total" id="stub-total-display">$42.48 PAID</div>
+          </div>
+
+          <div class="stub-seal">CINEPULSE VERIFIED</div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="ticket-actions-bar">
+        <button class="ticket-action-btn print-btn" id="print-ticket-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          <span>Print / Save PDF</span>
+        </button>
+        <button class="ticket-action-btn close-btn" id="done-ticket-btn">
+          <span>Done</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Stack -->
+  <div class="toast-stack" id="toast-container" aria-live="assertive"></div>
+
+  <!-- Razorpay SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Main Application Module -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
