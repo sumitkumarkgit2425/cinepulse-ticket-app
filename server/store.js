@@ -8,16 +8,16 @@ function generateSeatsForShow() {
   
   rows.forEach((row, rowIndex) => {
     let tier = 'standard';
-    let price = 14.00;
+    let price = 220;
     let label = 'Standard';
 
     if (rowIndex < 2) { // Rows A, B: VIP Recliners
       tier = 'vip';
-      price = 24.50;
+      price = 450;
       label = 'VIP Recliner';
     } else if (rowIndex < 5) { // Rows C, D, E: Premium Club
       tier = 'premium';
-      price = 18.50;
+      price = 320;
       label = 'Premium Club';
     }
 
@@ -72,10 +72,10 @@ const movies = [
         distance: '1.2 km away',
         amenities: ['M-Ticket', 'Food & Beverage', 'Recliner Seats', 'Wheelchair Accessible'],
         shows: [
-          { id: 'show-101', time: '11:00 AM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'available', priceStarting: 14.00, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
-          { id: 'show-102', time: '02:30 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'fast-filling', priceStarting: 18.50, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
-          { id: 'show-103', time: '06:15 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'almost-full', priceStarting: 24.50, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
-          { id: 'show-104', time: '09:45 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'available', priceStarting: 18.50, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' }
+          { id: 'show-101', time: '11:00 AM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'available', priceStarting: 220, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
+          { id: 'show-102', time: '02:30 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'fast-filling', priceStarting: 320, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
+          { id: 'show-103', time: '06:15 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'almost-full', priceStarting: 450, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
+          { id: 'show-104', time: '09:45 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'available', priceStarting: 320, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' }
         ]
       },
       {
@@ -84,9 +84,9 @@ const movies = [
         distance: '3.4 km away',
         amenities: ['M-Ticket', 'Dolby Atmos', 'Dolby Vision', 'Premium Dining'],
         shows: [
-          { id: 'show-105', time: '01:15 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'available', priceStarting: 16.00, hall: 'Auditorium 4 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' },
-          { id: 'show-106', time: '05:00 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'fast-filling', priceStarting: 18.50, hall: 'Auditorium 4 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' },
-          { id: 'show-107', time: '08:30 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'almost-full', priceStarting: 22.00, hall: 'Auditorium 4 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' }
+          { id: 'show-105', time: '01:15 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'available', priceStarting: 260, hall: 'Auditorium 4 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' },
+          { id: 'show-106', time: '05:00 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'fast-filling', priceStarting: 320, hall: 'Auditorium 4 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' },
+          { id: 'show-107', time: '08:30 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'almost-full', priceStarting: 380, hall: 'Auditorium 4 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' }
         ]
       },
       {
@@ -95,8 +95,8 @@ const movies = [
         distance: '5.1 km away',
         amenities: ['M-Ticket', '4DX Motion', 'Free Parking'],
         shows: [
-          { id: 'show-108', time: '03:45 PM', date: 'Today, Sep 24', format: '4DX 3D', status: 'available', priceStarting: 15.00, hall: 'Screen 2 (4DX Hall)', screenType: '4DX MOTION & ENVIRONMENTAL FX' },
-          { id: 'show-109', time: '07:15 PM', date: 'Today, Sep 24', format: '4DX 3D', status: 'fast-filling', priceStarting: 20.00, hall: 'Screen 2 (4DX Hall)', screenType: '4DX MOTION & ENVIRONMENTAL FX' }
+          { id: 'show-108', time: '03:45 PM', date: 'Today, Sep 24', format: '4DX 3D', status: 'available', priceStarting: 240, hall: 'Screen 2 (4DX Hall)', screenType: '4DX MOTION & ENVIRONMENTAL FX' },
+          { id: 'show-109', time: '07:15 PM', date: 'Today, Sep 24', format: '4DX 3D', status: 'fast-filling', priceStarting: 350, hall: 'Screen 2 (4DX Hall)', screenType: '4DX MOTION & ENVIRONMENTAL FX' }
         ]
       }
     ]
@@ -125,9 +125,9 @@ const movies = [
         distance: '1.2 km away',
         amenities: ['M-Ticket', 'Food & Beverage', 'Recliner Seats'],
         shows: [
-          { id: 'show-201', time: '12:30 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'available', priceStarting: 16.00, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
-          { id: 'show-202', time: '04:45 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'almost-full', priceStarting: 24.50, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
-          { id: 'show-203', time: '08:45 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'fast-filling', priceStarting: 24.50, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' }
+          { id: 'show-201', time: '12:30 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'available', priceStarting: 260, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
+          { id: 'show-202', time: '04:45 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'almost-full', priceStarting: 450, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' },
+          { id: 'show-203', time: '08:45 PM', date: 'Today, Sep 24', format: 'IMAX 70MM', status: 'fast-filling', priceStarting: 450, hall: 'Screen 1 (IMAX Laser)', screenType: 'IMAX 70MM DUAL LASER' }
         ]
       },
       {
@@ -136,8 +136,8 @@ const movies = [
         distance: '3.4 km away',
         amenities: ['M-Ticket', 'Dolby Atmos', 'Dolby Vision', 'Premium Dining'],
         shows: [
-          { id: 'show-204', time: '02:00 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'available', priceStarting: 15.00, hall: 'Auditorium 3 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' },
-          { id: 'show-205', time: '06:30 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'fast-filling', priceStarting: 20.00, hall: 'Auditorium 3 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' }
+          { id: 'show-204', time: '02:00 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'available', priceStarting: 240, hall: 'Auditorium 3 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' },
+          { id: 'show-205', time: '06:30 PM', date: 'Today, Sep 24', format: 'DOLBY ATMOS', status: 'fast-filling', priceStarting: 350, hall: 'Auditorium 3 (Dolby Cinema)', screenType: 'DOLBY ATMOS & VISION' }
         ]
       }
     ]

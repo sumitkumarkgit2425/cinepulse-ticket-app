@@ -1,4 +1,27 @@
+# Dependencies
 node_modules/
+package-lock.json
+
+# Environment variables & secrets (CRITICAL: Do NOT remove)
 .env
-.vercel
+.env.local
+.env.*.local
+*.env
+
+# Runtime logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Editor & OS files
+.vscode/
+.idea/
 .DS_Store
+Thumbs.db
+
+# Build & Deploy
+.vercel
+dist/
+build/
+scratch/

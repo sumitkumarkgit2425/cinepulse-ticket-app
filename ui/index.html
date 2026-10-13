@@ -80,32 +80,8 @@
 
       <!-- Right Nav Actions -->
       <div class="nav-right-group">
-        <div class="status-pill" id="connection-pill" title="Live WebSocket Concurrency Sync">
-          <span class="pulse-dot active" id="ws-pulse-dot"></span>
-          <span id="ws-status-text">Live Sync</span>
-        </div>
-
-        <button class="nav-btn" id="audio-toggle-btn" title="Toggle Sound Feedback">
-          <svg id="audio-icon-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-          </svg>
-          <svg id="audio-icon-off" class="hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <line x1="23" y1="9" x2="17" y2="15"></line>
-            <line x1="17" y1="9" x2="23" y2="15"></line>
-          </svg>
-        </button>
-
-        <button class="nav-btn lab-btn" id="open-lab-btn" title="Open Concurrency & Race Condition Laboratory">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-          <span>Concurrency Lab</span>
-        </button>
-
         <button class="nav-btn bookings-btn" id="open-bookings-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -115,11 +91,9 @@
         </button>
         
         <div class="user-profile-menu-wrap">
-          <button class="nav-btn profile-btn" id="profile-toggle-btn" title="Account Settings">
-            <img src="https://ui-avatars.com/api/?name=Alex+Mercer&background=00f0ff&color=000&rounded=true&size=24&bold=true" alt="User Profile" class="nav-avatar">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
+          <button class="nav-btn profile-btn" id="profile-toggle-btn" title="Account">
+            <img src="https://ui-avatars.com/api/?name=Alex+Mercer&background=2563eb&color=fff&rounded=true&size=24&bold=true" alt="User Profile" class="nav-avatar">
+            <span class="nav-user-label" id="nav-user-name">Account</span>
           </button>
         </div>
       </div>
@@ -127,21 +101,21 @@
     </div>
   </header>
 
-  <!-- Sticky Hold Lease Countdown Banner (Displays whenever seats are held across any view) -->
+  <!-- Sticky Hold Lease Countdown Banner -->
   <aside class="hold-timer-bar hidden" id="hold-timer-banner" aria-live="polite">
     <div class="hold-timer-content">
       <div class="timer-pulse-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
       </div>
       <div class="timer-info">
-        <span class="timer-label">SEATS LOCKED EXCLUSIVELY FOR YOU:</span>
+        <span class="timer-label">Seats Held:</span>
         <span class="timer-countdown" id="countdown-display">02:00</span>
-        <span class="timer-desc">Complete checkout before your lease expires and returns seats to the public pool.</span>
+        <span class="timer-desc">Complete checkout before time expires</span>
       </div>
-      <button class="release-btn" id="release-all-holds-btn" title="Release seat locks">
+      <button class="release-btn" id="release-all-holds-btn" title="Release seats">
         Release Seats
       </button>
     </div>
@@ -154,12 +128,9 @@
   <nav class="sub-navbar">
     <div class="sub-nav-container">
       <div class="sub-nav-links">
-        <button class="sub-link active" id="nav-home-btn">Movies in Cinemas</button>
-        <button class="sub-link" id="nav-experiences-btn">IMAX & Premium Screens</button>
-        <button class="sub-link" id="nav-upcoming-btn">Special Re-Releases</button>
-      </div>
-      <div class="sub-nav-badges">
-        <span class="sub-badge"><span class="dot-green"></span> Zero Race Conditions Guaranteed</span>
+        <button class="sub-link active" id="nav-home-btn">Now Showing</button>
+        <button class="sub-link" id="nav-experiences-btn">IMAX & Premium</button>
+        <button class="sub-link" id="nav-upcoming-btn">Coming Soon</button>
       </div>
     </div>
   </nav>
@@ -167,7 +138,7 @@
   <!-- ========================================================================= -->
   <!-- VIEW 0: AUTHENTICATION SCREEN                                              -->
   <!-- ========================================================================= -->
-  <main class="page-view active" id="view-auth">
+  <main class="page-view hidden" id="view-auth">
     <section class="auth-section">
       <div class="auth-card">
         <div class="brand-icon auth-brand-icon">
@@ -179,7 +150,7 @@
           </svg>
         </div>
         <h1 class="auth-title">Welcome to CinePulse</h1>
-        <p class="auth-subtitle">Sign in to book premium cinema tickets with zero race conditions.</p>
+        <p class="auth-subtitle">Sign in to book premium cinema tickets</p>
         
         <button class="auth-btn google-btn" id="login-google-btn">
           <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
@@ -200,38 +171,8 @@
   <!-- ========================================================================= -->
   <!-- VIEW 1: HOME SCREEN (BOOKMYSHOW EXPERIENCE)                                -->
   <!-- ========================================================================= -->
-  <main class="page-view hidden" id="view-home">
-    
-    <!-- Personalized User Greeting Banner (Post-Auth Experience) -->
-    <section class="user-greeting-section">
-      <div class="user-greeting-container">
-        <div class="user-info-wrap">
-          <div class="user-avatar">
-            <img src="https://ui-avatars.com/api/?name=Alex+Mercer&background=00f0ff&color=000&rounded=true&size=64&bold=true" alt="Alex Mercer">
-          </div>
-          <div class="user-greeting-text">
-            <span class="greeting-time" id="greeting-time">Good Evening,</span>
-            <h1 class="greeting-name">Alex Mercer</h1>
-          </div>
-        </div>
-        <div class="user-quick-stats">
-          <div class="stat-badge loyalty-badge">
-            <div class="stat-icon">🌟</div>
-            <div class="stat-details">
-              <span class="stat-val">2,450 pts</span>
-              <span class="stat-lbl">CinePulse Gold</span>
-            </div>
-          </div>
-          <div class="stat-badge upcoming-badge">
-            <div class="stat-icon">🎫</div>
-            <div class="stat-details">
-              <span class="stat-val">1 Upcoming</span>
-              <span class="stat-lbl">View Ticket &rarr;</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <main class="page-view active" id="view-home">
+
 
     <!-- Hero Billboard Showcase Carousel -->
     <section class="hero-carousel-section" id="hero-carousel-section">
@@ -403,12 +344,6 @@
             <span class="legend-dot dot-fast"></span> Fast Filling
             <span class="legend-dot dot-almost"></span> Almost Full
           </div>
-          <div class="concurrency-safe-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            </svg>
-            <span>Instant Atomic Locking Active</span>
-          </div>
         </div>
 
         <div class="cinemas-stack" id="cinemas-stack">
@@ -453,21 +388,11 @@
               <span class="hall-screen-type" id="current-hall-screen">IMAX LASER PROJECTION</span>
             </div>
 
-            <!-- Real-time Seat Stats -->
+            <!-- Seat Stats -->
             <div class="seat-stats-strip">
               <div class="stat-item"><span class="stat-dot dot-available"></span> Available: <strong id="stat-available-count">--</strong></div>
-              <div class="stat-item"><span class="stat-dot dot-held"></span> Locked by Others: <strong id="stat-held-count">--</strong></div>
-              <div class="stat-item"><span class="stat-dot dot-confirmed"></span> Sold: <strong id="stat-sold-count">--</strong></div>
+              <div class="stat-item"><span class="stat-dot dot-confirmed"></span> Taken: <strong id="stat-sold-count">--</strong></div>
             </div>
-
-            <!-- Reset Seats Utility -->
-            <button class="reset-seats-btn" id="reset-hall-seats-btn" title="Reset all seats for testing">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M2.5 2v6h6M21.5 22v-6h-6"></path>
-                <path d="M22 11.5A10 10 0 0 0 3.2 7.2L2.5 8M2 12.5a10 10 0 0 0 18.8 4.2l.7-1.2"></path>
-              </svg>
-              <span>Reset Demo</span>
-            </button>
           </div>
 
           <!-- Cinema Screen Curve Representation -->
@@ -485,7 +410,7 @@
                 </defs>
               </svg>
             </div>
-            <div class="screen-label">CURVED THEATER SCREEN (ALL EYES THIS WAY)</div>
+            <div class="screen-label">SCREEN</div>
           </div>
 
           <!-- Interactive Seating Map -->
@@ -513,9 +438,9 @@
             </div>
             <div class="legend-separator"></div>
             <div class="legend-item tier-item">
-              <span class="tier-pill vip-pill">VIP Recliner ($24.50)</span>
-              <span class="tier-pill premium-pill">Premium Club ($18.50)</span>
-              <span class="tier-pill standard-pill">Standard ($14.00)</span>
+              <span class="tier-pill vip-pill">VIP Recliner (₹450)</span>
+              <span class="tier-pill premium-pill">Premium Club (₹320)</span>
+              <span class="tier-pill standard-pill">Standard (₹220)</span>
             </div>
           </div>
 
@@ -561,7 +486,7 @@
             </div>
           </div>
 
-          <!-- Concurrency Guarantee Notice -->
+          <!-- Booking Trust & Delivery Notice -->
           <div class="concurrency-guarantee-box">
             <div class="guarantee-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -569,8 +494,8 @@
               </svg>
             </div>
             <div class="guarantee-text">
-              <strong>Atomic Lock Protection Active</strong>
-              <span>Selected seats are leased exclusively to your session. No other customer or bot can claim them while your lock is valid.</span>
+              <strong>Guaranteed Booking</strong>
+              <span>Instant digital ticket delivery with QR admission pass upon payment.</span>
             </div>
           </div>
 
@@ -578,20 +503,20 @@
           <div class="price-breakdown-card">
             <div class="breakdown-row">
               <span>Seat Subtotal</span>
-              <span id="price-subtotal">$0.00</span>
+              <span id="price-subtotal">₹0</span>
             </div>
             <div class="breakdown-row">
-              <span>Convenience & Booking Fee</span>
-              <span id="price-fee">$0.00</span>
+              <span>Booking Fee</span>
+              <span id="price-fee">₹0</span>
             </div>
             <div class="breakdown-row">
-              <span>Estimated Sales Tax (8%)</span>
-              <span id="price-tax">$0.00</span>
+              <span>GST (18%)</span>
+              <span id="price-tax">₹0</span>
             </div>
             <div class="breakdown-divider"></div>
             <div class="breakdown-row total-row">
               <span>Total Payable</span>
-              <span id="price-total">$0.00</span>
+              <span id="price-total">₹0</span>
             </div>
           </div>
 
@@ -599,26 +524,22 @@
           <form class="checkout-form" id="checkout-form" onsubmit="return false;">
             <div class="form-group">
               <label for="cust-name">Full Name</label>
-              <input type="text" id="cust-name" placeholder="e.g. Alex Mercer" required value="Alex Mercer">
+              <input type="text" id="cust-name" placeholder="Your Name" required value="Alex Mercer">
             </div>
             <div class="form-group">
               <label for="cust-email">Email Address</label>
-              <input type="email" id="cust-email" placeholder="alex.mercer@example.com" required value="alex.mercer@example.com">
+              <input type="email" id="cust-email" placeholder="you@example.com" required value="alex.mercer@example.com">
             </div>
             <div class="form-group">
               <label>Payment Method</label>
               <div class="payment-pills">
                 <label class="pay-radio active">
-                  <input type="radio" name="payment-method" value="Apple Pay" checked>
-                  <span>Apple Pay</span>
+                  <input type="radio" name="payment-method" value="Razorpay" checked>
+                  <span>UPI / Cards (Razorpay)</span>
                 </label>
                 <label class="pay-radio">
-                  <input type="radio" name="payment-method" value="Credit Card">
-                  <span>Credit Card</span>
-                </label>
-                <label class="pay-radio">
-                  <input type="radio" name="payment-method" value="Google Pay">
-                  <span>Google Pay</span>
+                  <input type="radio" name="payment-method" value="DemoPay">
+                  <span>Instant Pass (Direct Test)</span>
                 </label>
               </div>
             </div>
@@ -626,7 +547,7 @@
             <!-- Checkout Action Button -->
             <button type="submit" class="checkout-submit-btn" id="checkout-submit-btn" disabled>
               <span class="btn-text">Confirm Booking</span>
-              <span class="btn-amount" id="btn-total-amount">$0.00</span>
+              <span class="btn-amount" id="btn-total-amount">₹0</span>
             </button>
           </form>
 
@@ -637,116 +558,8 @@
   </main>
 
   <!-- ========================================================================= -->
-  <!-- MODALS: CONCURRENCY LAB, TICKETS, AND PASSES                               -->
+  <!-- MODALS: TICKETS AND PASSES                                                -->
   <!-- ========================================================================= -->
-
-  <!-- Concurrency & Race Condition Lab Modal -->
-  <div class="modal-backdrop hidden" id="concurrency-lab-modal">
-    <div class="modal-card lab-card">
-      <div class="modal-header">
-        <div class="lab-title-wrap">
-          <div class="lab-icon-badge">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-            </svg>
-          </div>
-          <div>
-            <h2 class="modal-title">Race Condition & Concurrency Laboratory</h2>
-            <p class="modal-subtitle">Real-time Stress Testing & Atomic Lock Conflict Demonstration</p>
-          </div>
-        </div>
-        <button class="close-modal-btn" id="close-lab-btn">&times;</button>
-      </div>
-
-      <div class="lab-body">
-        
-        <!-- Explanation Card -->
-        <div class="lab-intro-box">
-          <h4>How CinePulse Eliminates Race Conditions</h4>
-          <p>
-            When hot tickets go on sale, thousands of automated bots and users submit requests at the exact same millisecond. CinePulse uses <strong>Lexicographically Ordered Atomic Compare-and-Swap (CAS)</strong> with <strong>Time-To-Live (TTL) Leases</strong>. When 50 bots target the exact same seat, only 1 bot wins the lease (200 OK); the remaining 49 requests are atomically rejected with <code>409 Conflict</code>.
-          </p>
-        </div>
-
-        <!-- Interactive Test Controls -->
-        <div class="lab-controls-panel">
-          <div class="control-box">
-            <label for="lab-target-seat">Target Seat to Contest:</label>
-            <select id="lab-target-seat" class="lab-select">
-              <option value="C6" selected>Seat C6 (Premium Club - Center)</option>
-              <option value="A6">Seat A6 (VIP Recliner - Front Center)</option>
-              <option value="D7">Seat D7 (Premium Club)</option>
-              <option value="F6">Seat F6 (Standard Center)</option>
-            </select>
-          </div>
-
-          <div class="control-box">
-            <label for="lab-bot-count">Simultaneous Concurrent Bots: <span id="bot-count-display">25 Bots</span></label>
-            <input type="range" id="lab-bot-count" min="5" max="50" step="5" value="25" class="lab-slider">
-          </div>
-
-          <button class="launch-stress-btn" id="launch-stress-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="5 3 19 12 5 21 5 3"></polygon>
-            </svg>
-            <span>Launch Bot Rush Simulation</span>
-          </button>
-        </div>
-
-        <!-- Simulation Results Section -->
-        <div class="simulation-results-box hidden" id="simulation-results-box">
-          <div class="results-header-banner" id="results-verdict-banner">
-            <div class="verdict-icon" id="verdict-icon">✅</div>
-            <div class="verdict-text">
-              <h3 id="verdict-title">RACE CONDITION ELIMINATED</h3>
-              <p id="verdict-desc">25 concurrent bots fired at t0. Exactly 1 acquired lock, 24 rejected. 0 double bookings.</p>
-            </div>
-            <div class="verdict-metrics">
-              <div class="metric"><span class="metric-num" id="metric-duration">0.00ms</span><span class="metric-lbl">Total Time</span></div>
-              <div class="metric winner-metric"><span class="metric-num" id="metric-winners">1</span><span class="metric-lbl">Lock Winner</span></div>
-              <div class="metric conflict-metric"><span class="metric-num" id="metric-conflicts">24</span><span class="metric-lbl">Conflicts (409)</span></div>
-            </div>
-          </div>
-
-          <!-- Execution Waterfall / Contention Breakdown -->
-          <div class="waterfall-panel">
-            <div class="waterfall-header">
-              <span>SIMULTANEOUS DISPATCH WATERFALL TRACE</span>
-              <span class="mono-legend">Status Code • Microsecond Latency</span>
-            </div>
-            <div class="waterfall-list" id="waterfall-list">
-              <!-- Dynamically populated bot attempts -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Live Concurrency Audit Log Stream -->
-        <div class="audit-log-section">
-          <div class="audit-header">
-            <h4>Live Server Audit Log Stream (All Users & Locks)</h4>
-            <button class="refresh-audit-btn" id="refresh-audit-btn">Refresh</button>
-          </div>
-          <div class="audit-logs-table-wrap">
-            <table class="audit-table">
-              <thead>
-                <tr>
-                  <th>Time (ms)</th>
-                  <th>Event Type</th>
-                  <th>Seat(s)</th>
-                  <th>Client / Actor</th>
-                  <th>Status & Diagnostic Trace</th>
-                </tr>
-              </thead>
-              <tbody id="audit-logs-tbody">
-                <!-- Log entries injected -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
 
   <!-- My Bookings Modal -->
   <div class="modal-backdrop hidden" id="my-bookings-modal">
@@ -848,7 +661,7 @@
 
           <div class="stub-info">
             <div class="stub-seat-display" id="stub-seats-display">C5, C6</div>
-            <div class="stub-total" id="stub-total-display">$42.48 PAID</div>
+            <div class="stub-total" id="stub-total-display">₹0 PAID</div>
           </div>
 
           <div class="stub-seal">CINEPULSE VERIFIED</div>

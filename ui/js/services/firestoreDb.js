@@ -13,10 +13,10 @@ export async function initShowSeats(showId) {
   rows.forEach(r => {
     for(let i=1; i<=12; i++) {
       let tier = 'standard';
-      let price = 14.00;
+      let price = 220;
       let label = 'Standard Experience';
-      if(r==='A'||r==='B'){ tier='vip'; price=24.50; label='VIP Recliners'; }
-      else if(r==='C'||r==='D'||r==='E'){ tier='premium'; price=18.50; label='Premium Club'; }
+      if(r==='A'||r==='B'){ tier='vip'; price=450; label='VIP Recliners'; }
+      else if(r==='C'||r==='D'||r==='E'){ tier='premium'; price=320; label='Premium Club'; }
       const seatId = `${r}${i}`;
       batch.set(doc(seatsRef, seatId), {
         status: 'AVAILABLE',

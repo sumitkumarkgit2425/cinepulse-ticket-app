@@ -353,15 +353,22 @@ body {
   transform: translateY(-1px);
 }
 
-.lab-btn {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(244, 63, 94, 0.15));
-  border-color: rgba(245, 158, 11, 0.35);
-  color: #fbbf24;
+.profile-btn {
+  padding: 5px 14px 5px 6px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.lab-btn:hover {
-  border-color: var(--accent-amber);
-  box-shadow: 0 0 16px var(--accent-amber-glow);
+.nav-user-label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-main);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .badge-count {
@@ -369,7 +376,7 @@ body {
   color: #000;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: var(--radius-full);
 }
 

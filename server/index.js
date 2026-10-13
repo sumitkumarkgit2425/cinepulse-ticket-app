@@ -14,26 +14,71 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'ui')));
 
+// Load environment variables from .env
+try {
+  if (typeof process.loadEnvFile === 'function') {
+    process.loadEnvFile();
+  }
+} catch (e) {
+  // .env already loaded or not found
+}
+
 const Razorpay = require('razorpay');
-const razorpay = new Razorpay({
-  key_id: 'YOUR_RAZORPAY_KEY_ID',
-  key_secret: 'YOUR_RAZORPAY_KEY_SECRET'
-});
+
+function getRazorpayInstance() {
+  try {
+    if (typeof process.loadEnvFile === 'function') {
+      process.loadEnvFile();
+    }
+  } catch (e) {}
+
+  const keyId = (process.env.RAZORPAY_KEY_ID || '').trim();
+  const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').trim();
+
+  if (keyId && keySecret && !keyId.includes('YOUR_RAZORPAY') && !keySecret.includes('YOUR_RAZORPAY')) {
+    return {
+      client: new Razorpay({ key_id: keyId, key_secret: keySecret }),
+      keyId
+    };
+  }
+  return { client: null, keyId: null };
+}
 
 app.post('/api/payment/order', async (req, res) => {
   try {
     const { amount } = req.body;
-    const options = {
-      amount: Math.round(amount * 100),
-      currency: "INR",
-      receipt: "receipt_order_" + Date.now()
-    };
-    const order = await razorpay.orders.create(options);
-    res.json({ success: true, order });
+    const finalKeyId = keyId || process.env.RAZORPAY_KEY_ID || '';
+
+    // If Razorpay backend client is initialized with secret, create server order
+    if (client) {
+      try {
+        const options = {
+          amount: Math.round(Number(amount) * 100), // In paise (₹1 = 100 paise)
+          currency: "INR",
+          receipt: "receipt_order_" + Date.now().toString().slice(-8)
+        };
+        const order = await client.orders.create(options);
+        console.log(`✅ Razorpay Order Created: ${order.id} for ₹${amount}`);
+        return res.json({ success: true, order, keyId: finalKeyId });
+      } catch (orderErr) {
+        console.warn("⚠️ Razorpay order.create failed, falling back to standard checkout:", orderErr.message);
+      }
+    }
+
+    // Standard client-side Razorpay checkout mode (works with just public Key ID!)
+    console.log(`ℹ️ Launching Razorpay Standard Checkout for key: ${finalKeyId}`);
+    return res.json({
+      success: true,
+      clientOnly: true,
+      keyId: finalKeyId,
+      amount: Math.round(Number(amount) * 100)
+    });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error("❌ Payment endpoint error:", error.message);
+    return res.status(500).json({ success: false, error: error.message });
   }
 });
+
 
 // Create HTTP server & attach WebSocketServer
 const server = http.createServer(app);
@@ -107,6 +152,15 @@ wss.on('connection', (ws) => {
 });
 
 // --- REST API ENDPOINTS ---
+
+// 0. Public Client Config
+app.get('/api/config', (req, res) => {
+  res.json({
+    success: true,
+    tmdbApiKey: process.env.TMDB_API_KEY || '',
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID || ''
+  });
+});
 
 // 1. Get all movies and screenings
 app.get('/api/shows', (req, res) => {

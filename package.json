@@ -1,14 +1,23 @@
 {
   "name": "cinepulse-ticket-app",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Real-time cinema seat reservation engine with atomic concurrency locking, WebSockets, Razorpay payment gateway, and verified digital cinema passes.",
+  "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
     "dev": "node server/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/testConcurrency.js"
   },
-  "keywords": [],
+  "keywords": [
+    "cinema",
+    "ticketing",
+    "seat-reservation",
+    "razorpay",
+    "concurrency",
+    "websockets",
+    "firebase",
+    "real-time"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

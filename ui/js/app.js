@@ -390,12 +390,12 @@ const state = {
       cinema.shows.forEach(show => {
         const btn = document.createElement('button');
         btn.className = `showtime-pill-btn status-${show.status}`;
-        btn.title = `${show.format} • ${show.hall} • Starts at $${show.priceStarting.toFixed(2)}`;
+        btn.title = `${show.format} • ${show.hall} • Starts at ₹${show.priceStarting.toFixed(0)}`;
 
         btn.innerHTML = `
           <span class="pill-time">${show.time}</span>
           <span class="pill-format">${show.format}</span>
-          <span class="pill-price">$${show.priceStarting.toFixed(2)}</span>
+          <span class="pill-price">₹${show.priceStarting.toFixed(0)}</span>
         `;
 
         btn.addEventListener('click', () => {
@@ -461,9 +461,9 @@ const state = {
 
     const now = Date.now();
     const sections = [
-      { name: 'VIP Recliners — Rows A & B ($24.50)', rows: ['A', 'B'] },
-      { name: 'Premium Club — Rows C, D & E ($18.50)', rows: ['C', 'D', 'E'] },
-      { name: 'Standard Experience — Rows F, G & H ($14.00)', rows: ['F', 'G', 'H'] }
+      { name: 'VIP Recliners — Rows A & B (₹450)', rows: ['A', 'B'] },
+      { name: 'Premium Club — Rows C, D & E (₹320)', rows: ['C', 'D', 'E'] },
+      { name: 'Standard Experience — Rows F, G & H (₹220)', rows: ['F', 'G', 'H'] }
     ];
 
     sections.forEach(sec => {
@@ -537,17 +537,17 @@ const state = {
 
     if (isSelectedByMe) {
       el.classList.add('selected-by-me');
-      el.title = `Seat ${seatId} — Reserved by you ($${seat.price})`;
+      el.title = `Seat ${seatId} — Reserved by you (₹${seat.price})`;
     } else if (isHeldByOther) {
       el.classList.add('locked-by-other');
       const remSecs = Math.max(1, Math.round((seat.holdExpiresAt - now) / 1000));
-      el.title = `Seat ${seatId} — LOCKED by another customer (${remSecs}s hold lease remaining)`;
+      el.title = `Seat ${seatId} — Reserved by another customer (${remSecs}s hold remaining)`;
     } else if (isSold) {
       el.classList.add('sold-out');
       el.title = `Seat ${seatId} — Sold Out`;
     } else {
       el.classList.add('available');
-      el.title = `Seat ${seatId} — ${seat.tierLabel} ($${seat.price})`;
+      el.title = `Seat ${seatId} — ${seat.tierLabel} (₹${seat.price})`;
     }
 
     el.innerHTML = `
@@ -760,15 +760,15 @@ const state = {
     // Math
     let subtotal = 0;
     state.myHeldSeats.forEach(d => { subtotal += d.price; });
-    const fee = selectedCount > 0 ? selectedCount * 2.50 : 0;
-    const tax = subtotal > 0 ? parseFloat((subtotal * 0.08).toFixed(2)) : 0;
+    const fee = selectedCount > 0 ? selectedCount * 25 : 0;
+    const tax = subtotal > 0 ? parseFloat(((subtotal + fee) * 0.18).toFixed(2)) : 0;
     const total = subtotal > 0 ? parseFloat((subtotal + fee + tax).toFixed(2)) : 0;
 
-    document.getElementById('price-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('price-fee').textContent = `$${fee.toFixed(2)}`;
-    document.getElementById('price-tax').textContent = `$${tax.toFixed(2)}`;
-    document.getElementById('price-total').textContent = `$${total.toFixed(2)}`;
-    document.getElementById('btn-total-amount').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('price-subtotal').textContent = `₹${subtotal.toFixed(0)}`;
+    document.getElementById('price-fee').textContent = `₹${fee.toFixed(0)}`;
+    document.getElementById('price-tax').textContent = `₹${tax.toFixed(2)}`;
+    document.getElementById('price-total').textContent = `₹${total.toFixed(2)}`;
+    document.getElementById('btn-total-amount').textContent = `₹${total.toFixed(0)}`;
 
     const submitBtn = document.getElementById('checkout-submit-btn');
     if (submitBtn) {
@@ -782,91 +782,180 @@ const state = {
     const seatIds = Array.from(state.myHeldSeats.keys());
     const custName = document.getElementById('cust-name').value.trim() || 'Alex Mercer';
     const custEmail = document.getElementById('cust-email').value.trim() || 'alex.mercer@example.com';
-    const paymentMethod = document.querySelector('input[name="payment-method"]:checked')?.value || 'Apple Pay';
-
     const submitBtn = document.getElementById('checkout-submit-btn');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="btn-text">Initializing Payment...</span>';
 
     const subtotal = seatIds.reduce((sum, id) => sum + (state.seatsData[id]?.price || 0), 0);
-    const fee = seatIds.length * 2.50;
-    const tax = (subtotal * 0.08);
-    const total = subtotal + fee + tax;
+    const fee = seatIds.length * 25;
+    const tax = parseFloat(((subtotal + fee) * 0.18).toFixed(2));
+    const total = parseFloat((subtotal + fee + tax).toFixed(2));
+
+    const selectedMethod = document.querySelector('input[name="payment-method"]:checked')?.value || 'Razorpay';
+
+    if (selectedMethod === 'DemoPay') {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="btn-text">Confirming Booking...</span>';
+      const res = await bookSeats(state.activeShow.id, seatIds, state.clientId, { 
+        name: custName, 
+        email: custEmail, 
+        paymentMethod: 'Instant Pass (Direct Test)', 
+        paymentId: 'TEST_' + Date.now().toString().slice(-6)
+      });
+      if (res.success) {
+        playSuccessChord();
+        state.myHeldSeats.clear();
+        stopHoldCountdown();
+        updateCheckoutDrawer();
+        renderSeatGrid();
+        showTicketPassModal({
+          bookingId: res.bookingId,
+          hall: state.activeShow.hall,
+          screenType: state.activeShow.screenType,
+          movieTitle: state.activeMovie.title,
+          showDate: state.activeDate,
+          showTime: state.activeShow.time,
+          seatIds,
+          customer: { name: custName },
+          total
+        });
+        loadBookingsCount();
+        showToast('🎉 Booking Confirmed! Cinema Pass Issued.', 'success');
+      } else {
+        playConflictSound();
+        showToast(res.message || 'Booking failed.', 'conflict');
+      }
+      submitBtn.disabled = state.myHeldSeats.size === 0;
+      submitBtn.innerHTML = `
+        <span class="btn-text">Confirm Booking</span>
+        <span class="btn-amount" id="btn-total-amount">₹0</span>
+      `;
+      updateCheckoutDrawer();
+      return;
+    }
+
+    const paymentMethod = 'Razorpay (Online)';
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="btn-text">Opening Razorpay...</span>';
 
     try {
-      const orderRes = await fetch('/api/payment/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: total })
-      });
-      const orderData = await orderRes.json();
-      
-      if (!orderData.success) throw new Error(orderData.error);
+      let orderData = null;
+      try {
+        const orderRes = await fetch('/api/payment/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: total })
+        });
+        const data = await orderRes.json();
+        if (data && data.success) {
+          orderData = data;
+        }
+      } catch (apiErr) {
+        console.warn("Backend order creation endpoint error:", apiErr);
+      }
+
+      if (!orderData || !orderData.order || !orderData.order.id) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `
+          <span class="btn-text">Confirm Booking</span>
+          <span class="btn-amount" id="btn-total-amount">₹${total.toFixed(0)}</span>
+        `;
+        playConflictSound();
+        showToast("Razorpay requires a valid Key Secret in .env to create orders. Add your Secret in .env or select 'Instant Pass' to test immediately.", "conflict");
+        return;
+      }
+
+      if (typeof window.Razorpay === 'undefined') {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `
+          <span class="btn-text">Confirm Booking</span>
+          <span class="btn-amount" id="btn-total-amount">₹${total.toFixed(0)}</span>
+        `;
+        throw new Error("Razorpay payment gateway SDK is not loaded. Please check your internet connection.");
+      }
+
+      const keyId = orderData.keyId;
+      const amountInPaise = orderData.order.amount;
 
       const options = {
-        key: "rzp_test_TfoPR0PLCrGpHK",
-        amount: orderData.order.amount,
+        key: keyId,
+        amount: amountInPaise,
         currency: "INR",
-        name: "CinePulse Tickets",
-        description: `Booking for ${state.activeMovie.title}`,
+        name: "CinePulse Cinema",
+        description: `Tickets for ${state.activeMovie?.title || 'Selected Show'}`,
         order_id: orderData.order.id,
-        handler: async function (response) {
-          submitBtn.innerHTML = '<span class="btn-text">Verifying Locks...</span>';
-          const res = await bookSeats(state.activeShow.id, seatIds, state.clientId, { name: custName, email: custEmail, paymentMethod, paymentId: response.razorpay_payment_id });
-          if (res.success) {
-            playSuccessChord();
-            state.myHeldSeats.clear();
-            stopHoldCountdown();
-            updateCheckoutDrawer();
-            renderSeatGrid();
-            showTicketPassModal({
-              bookingId: res.bookingId,
-              hall: state.activeShow.hall,
-              screenType: state.activeShow.screenType,
-              movieTitle: state.activeMovie.title,
-              showDate: state.activeDate,
-              showTime: state.activeShow.time,
-              seatIds,
-              customer: { name: custName },
-              total
-            });
-            loadBookingsCount();
-            showToast('🎉 Booking Confirmed! Cinema Pass Issued.', 'success');
-          } else {
-            playConflictSound();
-            showToast(res.message || 'Booking failed.', 'conflict');
-          }
-          submitBtn.disabled = state.myHeldSeats.size === 0;
-          submitBtn.innerHTML = `
-            <span class="btn-text">Confirm Booking</span>
-            <span class="btn-amount" id="btn-total-amount">$0.00</span>
-          `;
-          updateCheckoutDrawer();
-        },
         prefill: { name: custName, email: custEmail },
         theme: { color: "#00f0ff" },
-        modal: {
-          ondismiss: function() {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `
-              <span class="btn-text">Confirm Booking</span>
-              <span class="btn-amount" id="btn-total-amount">$${total.toFixed(2)}</span>
-            `;
-          }
+      handler: async function (response) {
+        submitBtn.innerHTML = '<span class="btn-text">Confirming Booking...</span>';
+        const res = await bookSeats(state.activeShow.id, seatIds, state.clientId, { 
+          name: custName, 
+          email: custEmail, 
+          paymentMethod, 
+          paymentId: response.razorpay_payment_id || ('PAY_' + Date.now().toString().slice(-6))
+        });
+        if (res.success) {
+          playSuccessChord();
+          state.myHeldSeats.clear();
+          stopHoldCountdown();
+          updateCheckoutDrawer();
+          renderSeatGrid();
+          showTicketPassModal({
+            bookingId: res.bookingId,
+            hall: state.activeShow.hall,
+            screenType: state.activeShow.screenType,
+            movieTitle: state.activeMovie.title,
+            showDate: state.activeDate,
+            showTime: state.activeShow.time,
+            seatIds,
+            customer: { name: custName },
+            total
+          });
+          loadBookingsCount();
+          showToast('🎉 Booking Confirmed! Cinema Pass Issued.', 'success');
+        } else {
+          playConflictSound();
+          showToast(res.message || 'Booking failed.', 'conflict');
         }
-      };
-      const rzp = new Razorpay(options);
+        submitBtn.disabled = state.myHeldSeats.size === 0;
+        submitBtn.innerHTML = `
+          <span class="btn-text">Confirm Booking</span>
+          <span class="btn-amount" id="btn-total-amount">₹0</span>
+        `;
+        updateCheckoutDrawer();
+      },
+      modal: {
+        ondismiss: function() {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `
+            <span class="btn-text">Confirm Booking</span>
+            <span class="btn-amount" id="btn-total-amount">₹${total.toFixed(0)}</span>
+          `;
+        }
+      }
+    };
+
+    if (orderData && orderData.order && orderData.order.id) {
+      options.order_id = orderData.order.id;
+    }
+
+    const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', function (response){
         playConflictSound();
-        showToast('Payment failed.', 'conflict');
+        const msg = response.error?.description || response.error?.reason || 'Payment failed';
+        showToast(msg, 'conflict');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `
+          <span class="btn-text">Confirm Booking</span>
+          <span class="btn-amount" id="btn-total-amount">₹${total.toFixed(0)}</span>
+        `;
       });
       rzp.open();
     } catch (e) {
-      showToast('Payment initialization failed', 'conflict');
+      playConflictSound();
+      showToast(e.message || 'Payment initialization failed', 'conflict');
       submitBtn.disabled = false;
       submitBtn.innerHTML = `
         <span class="btn-text">Confirm Booking</span>
-        <span class="btn-amount" id="btn-total-amount">$${total.toFixed(2)}</span>
+        <span class="btn-amount" id="btn-total-amount">₹${total.toFixed(0)}</span>
       `;
     }
   }
@@ -882,7 +971,7 @@ const state = {
     document.getElementById('ticket-seats').textContent = booking.seatIds.join(', ');
     document.getElementById('ticket-guest-name').textContent = booking.customer.name;
     document.getElementById('stub-seats-display').textContent = booking.seatIds.join(', ');
-    document.getElementById('stub-total-display').textContent = `$${booking.total.toFixed(2)} PAID`;
+    document.getElementById('stub-total-display').textContent = `₹${booking.total.toFixed(2)} PAID`;
     document.getElementById('ticket-barcode-num').textContent = `4829 0184 ${booking.bookingId.replace(/[^0-9]/g, '').padEnd(8, '0')}`;
 
     drawTicketQRCode('ticket-qr-canvas', booking.qrPayload || booking.bookingId);
@@ -1386,20 +1475,23 @@ const state = {
     // Listen to Firebase Auth state
     listenToAuthChanges((user) => {
       state.user = user;
+      const navNameEl = document.getElementById('nav-user-name');
+      const avatarEl = document.querySelector('.user-avatar img');
+      const navAvatarEl = document.querySelector('.nav-avatar');
+
       if (user) {
-        document.querySelector('.greeting-name').textContent = user.displayName || 'Guest User';
-        const avatarEl = document.querySelector('.user-avatar img');
-        const navAvatarEl = document.querySelector('.nav-avatar');
+        const nameEl = document.querySelector('.greeting-name');
+        if (nameEl) nameEl.textContent = user.displayName || 'Guest User';
+        if (navNameEl) navNameEl.textContent = user.displayName ? user.displayName.split(' ')[0] : 'Account';
         if (avatarEl && user.photoURL) avatarEl.src = user.photoURL;
         if (navAvatarEl && user.photoURL) navAvatarEl.src = user.photoURL;
         if (state.currentView === 'auth') {
           showView('home');
         }
       } else {
-        document.querySelector('.greeting-name').textContent = 'Guest User';
-        if (state.currentView !== 'auth') {
-          showView('auth');
-        }
+        const nameEl = document.querySelector('.greeting-name');
+        if (nameEl) nameEl.textContent = 'Guest User';
+        if (navNameEl) navNameEl.textContent = 'Sign In';
       }
     });
   }

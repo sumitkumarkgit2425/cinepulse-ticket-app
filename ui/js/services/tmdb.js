@@ -1,22 +1,31 @@
 // ui/js/services/tmdb.js
 
-// TODO: Replace with your actual TMDB API Key (v3 auth)
-const TMDB_API_KEY = "a2328efa3f7fc8a1565688992426b9e4";
+let tmdbApiKey = null;
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
 /**
- * Fetches now playing movies from TMDB API.
- * 
- * @returns {Promise<Array>} List of movies
+ * Fetches now playing movies from TMDB API or falls back to local data.
+ * @returns {Promise<Array|null>} List of movies
  */
 export async function fetchNowPlayingMovies() {
-  if (TMDB_API_KEY === "YOUR_TMDB_API_KEY") {
-    console.warn("TMDB API Key is missing. Using local mock data instead.");
-    return null; // Return null so app.js falls back to local data
+  if (!tmdbApiKey) {
+    try {
+      const res = await fetch('/api/config');
+      const cfg = await res.json();
+      if (cfg && cfg.tmdbApiKey && !cfg.tmdbApiKey.includes('YOUR_')) {
+        tmdbApiKey = cfg.tmdbApiKey;
+      }
+    } catch (e) {
+      // Offline or /api/config unavailable
+    }
+  }
+
+  if (!tmdbApiKey) {
+    return null; // Return null so app.js falls back cleanly to local movies
   }
 
   try {
-    const response = await fetch(`${TMDB_BASE_URL}/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+    const response = await fetch(`${TMDB_BASE_URL}/movie/now_playing?api_key=${tmdbApiKey}&language=en-US&page=1`);
     if (!response.ok) throw new Error("Network response was not ok");
     const data = await response.json();
     return data.results;
